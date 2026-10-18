@@ -6,9 +6,8 @@ target_link_libraries(ogr-decode
     terragear
     ${ZLIB_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}
-    ${SIMGEAR_CORE_LIBRARIES}
-    ${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
-    ${Boost_LIBRARIES}
+    SimGearCore
+    Boost::thread
 )
 
 install(TARGETS ogr-decode RUNTIME DESTINATION bin)

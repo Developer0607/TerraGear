@@ -29,11 +29,10 @@ set_target_properties(tg-construct PROPERTIES
 target_link_libraries(tg-construct
     terragear
     Array landcover
-    ${Boost_LIBRARIES}
+    Boost::thread
     ${GDAL_LIBRARY}
     ${ZLIB_LIBRARY}
-    ${SIMGEAR_CORE_LIBRARIES}
-    ${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
+    SimGearCore
 )
 
 install(TARGETS tg-construct RUNTIME DESTINATION bin)

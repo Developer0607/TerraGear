@@ -368,7 +368,8 @@ bool intersection(const SGGeod &p0, const SGGeod &p1, const SGGeod& p2, const SG
     const CGAL::Segment_2<Kernel> *iseg = CGAL::object_cast<CGAL::Segment_2<Kernel> >(&result);
     
     if (ipoint) {
-        // handle the point intersection case with *ipoint.
+        intersection = SGGeod::fromDeg(CGAL::to_double(ipoint->x()),
+                                       CGAL::to_double(ipoint->y()));
         return true;
     } else if (iseg ) {
         // handle the segment intersection case with *iseg.

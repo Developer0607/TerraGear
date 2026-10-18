@@ -1,7 +1,5 @@
 include_directories(${GDAL_INCLUDE_DIR})
 
-include( ${CGAL_USE_FILE} )
-
 add_library(terragear STATIC
     clipper.cpp
     clipper.hpp
@@ -33,3 +31,9 @@ add_library(terragear STATIC
     tg_unique_vec3d.hxx
     tg_unique_vec3f.hxx
 )
+
+target_link_libraries(terragear PUBLIC CGAL::CGAL SimGearCore)
+
+add_executable(test_cgal6_compat test_cgal6_compat.cxx)
+target_link_libraries(test_cgal6_compat PRIVATE terragear)
+add_test(NAME cgal6_compat COMMAND test_cgal6_compat)

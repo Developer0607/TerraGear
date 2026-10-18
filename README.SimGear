@@ -1,24 +1,29 @@
-21 February 2001 - CLO
+TerraGear dependency and build notes
+====================================
 
-As of version 0.7.2, FlightGear now requires the SimGear supporting
-libraries to be installed before configuring and building FlightGear.
-You must also have SimGear installed if you build the TerraGear
-scenery creating tools (TerraGear is not required to run the
-simulator).
+TerraGear requires CMake 3.20 or newer and a C++17 compiler. The current
+supported dependency baseline is:
 
-You can get a copy of SimGear from the simgear web page:
+  * CGAL 6.x
+  * SimGear 2024.1 or newer
+  * Boost (system and thread components)
+  * GDAL 2.0 or newer
+  * ZLIB, TIFF, and Threads
 
-    http://www.simgear.org
+Build and install SimGear before configuring TerraGear. SimGear must be
+installed with its CMake package files. If it is installed outside the
+standard prefix, set CMAKE_PREFIX_PATH to its install prefix or provide
+SimGear_DIR pointing to the directory containing SimGearConfig.cmake.
 
-SimGear build notes:
+Configure and build TerraGear from the stable source directory:
 
-You should be able to just run the standard "./configure; make; make
-install" to configure, build, and install SimGear.  By default,
-SimGear is installed in /usr/local/lib/libsg*.a and
-/usr/local/include/simgear/.
+  cmake -S . -B build
+  cmake --build build --parallel
+  ctest --test-dir build --output-on-failure
 
-You may specify an alternate prefix for building and installing
-SimGear.  If you do this, you may have to point the FlightGear
-configure script to the correct location of SimGear.  For instance, if
-you installed SimGear in /usr/site/include and /usr/site/lib, you
-could configure FlightGear with "./configure --with-simgear=/usr/site"
+If CGAL is installed in a non-standard prefix, set CGAL_DIR to the directory
+containing CGALConfig.cmake when configuring. The build uses the exported
+CGAL::CGAL and SimGearCore targets so their include paths and transitive
+dependencies are supplied by the dependency packages. The CGAL compatibility
+test checks polygon triangulation with and without a hole, KD-tree spatial
+queries, and segment intersections.

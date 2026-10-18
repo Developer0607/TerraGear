@@ -30,9 +30,8 @@ target_link_libraries(genapts850
     ${GDAL_LIBRARY}
     ${ZLIB_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}
-    ${SIMGEAR_CORE_LIBRARIES}
-    ${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
-    ${Boost_LIBRARIES}
+    SimGearCore
+    Boost::thread
     ${RT_LIBRARY})
 
 install(TARGETS genapts850 RUNTIME DESTINATION bin)

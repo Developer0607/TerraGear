@@ -3,6 +3,7 @@
 add_library(Array STATIC 
     array.cxx array.hxx
 )
+target_link_libraries(Array PUBLIC SimGearCore)
 install( TARGETS Array
          RUNTIME DESTINATION bin
          LIBRARY DESTINATION lib
@@ -15,8 +16,7 @@ add_executable(test_array testarray.cxx)
 target_link_libraries(test_array 
     Array
 	${ZLIB_LIBRARY}
-	${SIMGEAR_CORE_LIBRARIES}
-	${SIMGEAR_CORE_LIBRARY_DEPENDENCIES})
+	SimGearCore)
 
 install(TARGETS test_array RUNTIME DESTINATION bin)
 if (MSVC)

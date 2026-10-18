@@ -9,6 +9,7 @@ add_library(Terra STATIC
     Vec2.h Vec3.h
 	getopt.c getopt.h 
 )
+target_link_libraries(Terra PUBLIC SimGearCore)
 
 add_executable(terra_bin 
     cmdline.cc greedy.cc output.cc terra.cc terra.h version.h)

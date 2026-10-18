@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <iterator>
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
@@ -91,7 +92,7 @@ static void tg_insert_polygon(CDTPlus& cdt,const Polygon_2& polygon)
 {
     if ( polygon.is_empty() ) return;
 
-    CDTPlus::Vertex_handle v_prev=cdt.insert(*CGAL::cpp0x::prev(polygon.vertices_end()));
+    CDTPlus::Vertex_handle v_prev=cdt.insert(*std::prev(polygon.vertices_end()));
     for (Polygon_2::Vertex_iterator vit=polygon.vertices_begin(); vit!=polygon.vertices_end();++vit) {
         CDTPlus::Vertex_handle vh=cdt.insert(*vit);
         cdt.insert_constraint(vh,v_prev);

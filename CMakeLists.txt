@@ -1,15 +1,7 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required(VERSION 3.20)
 
-if(COMMAND cmake_policy)
-   if(POLICY CMP0054)
-       cmake_policy(SET CMP0054 NEW)
-   endif()
-   if(POLICY CMP0042)
-       cmake_policy(SET CMP0042 NEW)
-   endif()
-   if(POLICY CMP0071)
-       cmake_policy(SET CMP0071 NEW)
-   endif()
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
 endif()
 
 include (CheckFunctionExists)
@@ -18,12 +10,12 @@ include (CheckCXXSourceCompiles)
 include (CheckIncludeFile)
 include (CPack)
 
-# let's use & require C++11 - note these are only functional with CMake 3.1
-# we do manual fallbacks for CMake 3.0 in the compilers section
-set(CMAKE_CXX_STANDARD 11)
+# CGAL 6 and SimGear 2024.1 require C++17.
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 project(TerraGear)
+enable_testing()
 
 # read 'version' file into a variable (stripping any newlines or spaces)
 file(READ version versionFile)
@@ -44,96 +36,13 @@ if(NOT CMAKE_BUILD_TYPE)
       FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-if (MSVC)
-  GET_FILENAME_COMPONENT(PARENT_DIR ${PROJECT_SOURCE_DIR} PATH)
-  
-  if (CMAKE_CL_64)
-    SET(TEST_3RDPARTY_DIR "${PARENT_DIR}/3rdparty.x64")
-  else (CMAKE_CL_64)
-    SET(TEST_3RDPARTY_DIR "${PARENT_DIR}/3rdparty")
-  endif (CMAKE_CL_64)
-  
-  if (EXISTS ${TEST_3RDPARTY_DIR})
-    set(MSVC_3RDPARTY_ROOT ${PARENT_DIR} CACHE PATH "Location where the third-party dependencies are extracted")
-  else (EXISTS ${TEST_3RDPARTY_DIR})
-    set(MSVC_3RDPARTY_ROOT NOT_FOUND CACHE PATH "Location where the third-party dependencies are extracted")
-  endif (EXISTS ${TEST_3RDPARTY_DIR})
-  
-  set( RT_LIBRARY "winmm.lib" )
-else (MSVC)
-  set(MSVC_3RDPARTY_ROOT)
-endif (MSVC)
-
-if (MSVC AND NOT MSVC_3RDPARTY_ROOT STREQUAL "NOT_FOUND")
-  message(STATUS "3rdparty files located in ${MSVC_3RDPARTY_ROOT}")
-  
-  set( OSG_MSVC "msvc" )
-  if (${MSVC_VERSION} EQUAL 1600)
-      set( OSG_MSVC ${OSG_MSVC}100 )
-  else (${MSVC_VERSION} EQUAL 1600)
-      set( OSG_MSVC ${OSG_MSVC}90 )
-  endif (${MSVC_VERSION} EQUAL 1600)
-  
-  if (CMAKE_CL_64)
-      set( OSG_MSVC ${OSG_MSVC}-64 )
-	  set( MSVC_3RDPARTY_DIR 3rdParty.x64 )
-  else (CMAKE_CL_64)
-	  set( MSVC_3RDPARTY_DIR 3rdParty )
-  endif (CMAKE_CL_64)
-
-  set (CMAKE_LIBRARY_PATH ${MSVC_3RDPARTY_ROOT}/${MSVC_3RDPARTY_DIR}/lib ${MSVC_3RDPARTY_ROOT}/install/${OSG_MSVC}/OpenScenegraph/lib ${MSVC_3RDPARTY_ROOT}/install/${OSG_MSVC}/SimGear/lib )
-  set (CMAKE_INCLUDE_PATH ${MSVC_3RDPARTY_ROOT}/${MSVC_3RDPARTY_DIR}/include ${MSVC_3RDPARTY_ROOT}/install/${OSG_MSVC}/OpenScenegraph/include ${MSVC_3RDPARTY_ROOT}/install/${OSG_MSVC}/SimGear/include)
-  
-  find_path(BOOST_ROOT boost/version.hpp
-			${MSVC_3RDPARTY_ROOT}/boost
-			${MSVC_3RDPARTY_ROOT}/boost_1_52_0
-			${MSVC_3RDPARTY_ROOT}/boost_1_51_0
-			${MSVC_3RDPARTY_ROOT}/boost_1_50_0
-			${MSVC_3RDPARTY_ROOT}/boost_1_49_0
-			${MSVC_3RDPARTY_ROOT}/boost_1_48_0
-			${MSVC_3RDPARTY_ROOT}/boost_1_47_0
-			${MSVC_3RDPARTY_ROOT}/boost_1_46_1
-			${MSVC_3RDPARTY_ROOT}/boost_1_46_0
-			${MSVC_3RDPARTY_ROOT}/boost_1_45_0
-			${MSVC_3RDPARTY_ROOT}/boost_1_44_0
-			)
-
-  message(STATUS "BOOST_ROOT is ${BOOST_ROOT}")
-  
-  if (CMAKE_CL_64)
-	  set( BOOST_LIBRARYDIR "${BOOST_ROOT}/lib64" )
-  else (CMAKE_CL_64)
-	  set( BOOST_LIBRARYDIR "${BOOST_ROOT}/lib" )
-  endif (CMAKE_CL_64)
-  
-  set (Boost_USE_STATIC_LIBS 1)
-  set (OPENAL_INCLUDE_DIR ${MSVC_3RDPARTY_ROOT}/${MSVC_3RDPARTY_DIR}/include)
-  set (ALUT_INCLUDE_DIR ${MSVC_3RDPARTY_ROOT}/${MSVC_3RDPARTY_DIR}/include)
-  set (OPENAL_LIBRARY_DIR ${MSVC_3RDPARTY_ROOT}/${MSVC_3RDPARTY_DIR}/lib)
-endif (MSVC AND NOT MSVC_3RDPARTY_ROOT STREQUAL "NOT_FOUND")
-
-# CGAL will reset Boost_LIBRARIES, so ensure we do this first to avoid breaking boost linking
-set (CGAL_MINIMUM 4.0)
-set (CGAL_OLD 0)
-find_package(CGAL COMPONENTS Core REQUIRED)
-if (CGAL_FOUND)
-	if(${CGAL_MAJOR_VERSION}.${CGAL_MINOR_VERSION} VERSION_LESS ${CGAL_MINIMUM})
-        message(FATAL_ERROR "CGAL >= ${CGAL_MINIMUM} is required. Found CGAL ${CGAL_MAJOR_VERSION}.${CGAL_MINOR_VERSION}")
-	else(${CGAL_MAJOR_VERSION}.${CGAL_MINOR_VERSION} VERSION_LESS ${CGAL_MINIMUM})
-        message(STATUS "Found CGAL ${CGAL_MAJOR_VERSION}.${CGAL_MINOR_VERSION}")
-		if(${CGAL_MAJOR_VERSION}.${CGAL_MINOR_VERSION} VERSION_LESS 4.5)
-			set (CGAL_OLD 1)
-		endif()
-	endif(${CGAL_MAJOR_VERSION}.${CGAL_MINOR_VERSION} VERSION_LESS ${CGAL_MINIMUM})
-
-	include ( ${CGAL_USE_FILE} )
-endif (CGAL_FOUND)
+find_package(CGAL 6 REQUIRED)
 
 # check required dependencies
 find_package(Boost COMPONENTS system thread REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Threads REQUIRED)
-find_package(SimGear 3.1.0 REQUIRED)
+find_package(SimGear 2024.1 CONFIG REQUIRED)
 find_package(GDAL 2.0.0 REQUIRED)
 find_package(TIFF REQUIRED) # needed for SRTM
 
@@ -152,9 +61,6 @@ set(PKGDATADIR ${CMAKE_INSTALL_PREFIX}/share/TerraGear)
 if(CMAKE_COMPILER_IS_GNUCXX)
     set(WARNING_FLAGS -Wall)
 
-    if (CMAKE_VERSION VERSION_LESS 3.1)
-       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    endif()
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 if (WIN32)
@@ -165,9 +71,7 @@ if (WIN32)
         # endforeach(warning)
 
         set(MSVC_FLAGS "-DNOMINMAX -D_USE_MATH_DEFINES -D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D__CRT_NONSTDC_NO_WARNINGS -DNO_TIMER")
-        if (${MSVC_VERSION} EQUAL 1600)
-		  set( MSVC_LD_FLAGS "/FORCE:MULTIPLE" )
-        endif (${MSVC_VERSION} EQUAL 1600)
+        set(RT_LIBRARY winmm)
     endif (MSVC)
 	
     set(NOMINMAX 1)
@@ -175,12 +79,9 @@ endif (WIN32)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS} ${MSVC_FLAGS} -D_REENTRANT")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} ${MSVC_FLAGS} -D_REENTRANT -DNO_OPENSCENEGRAPH_INTERFACE")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${MSVC_LD_FLAGS}")
-
 include_directories(
 	${Boost_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIR}
-	${SIMGEAR_INCLUDE_DIR}
 	)
 
 add_definitions(-DHAVE_CONFIG_H)
@@ -213,4 +114,3 @@ CONFIGURE_FILE(
   IMMEDIATE @ONLY)
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-

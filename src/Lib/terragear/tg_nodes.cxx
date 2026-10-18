@@ -92,17 +92,10 @@ bool TGNodes::get_geod_edge( const SGBucket& b, std::vector<SGGeod>& north, std:
 
 #else
 
-// The spacial search utilizes the boost tuple construct.
+// The spatial search uses a two-dimensional point and elevation tuple.
 // The k-d tree is generated in two dimensions. and the first element of the tuple is this 2d point
 // the second element of the tuple is the elevation of this point
 // Three dimensional queries is a bit overkill, but the code, although faster, is slightly more cumbersome
-
-// get function for the property map - needed for cgal trait extension
-#ifdef CGAL_OLD
-My_point_property_map::reference get(My_point_property_map, My_point_property_map::key_type p) {
-    return boost::get<0>(p);
-}
-#endif
 
 // Build the k-d tree
 void TGNodes::init_spacial_query( void )
@@ -149,7 +142,7 @@ bool TGNodes::get_geod_inside( const SGGeod& min, const SGGeod& max, std::vector
 
     // and convert the tuples back into SGGeod
     for ( it = result.begin(); it != result.end(); it++ ) {
-        points.push_back( SGGeod::fromDegM( boost::get<0>(*it).x(), boost::get<0>(*it).y(), boost::get<1>(*it) ) );
+        points.push_back(SGGeod::fromDegM(std::get<0>(*it).x(), std::get<0>(*it).y(), std::get<1>(*it)));
     }
 
     return true;
@@ -179,7 +172,7 @@ bool TGNodes::get_nodes_inside( const SGGeod& min, const SGGeod& max, std::vecto
     
     // and convert the tuples back into SGGeod
     for ( it = result.begin(); it != result.end(); it++ ) {
-        points.push_back( boost::get<2>(*it) );
+        points.push_back(std::get<2>(*it));
     }
     
     return true;
@@ -218,7 +211,7 @@ bool TGNodes::get_geod_edge( const SGBucket& b, std::vector<SGGeod>& north, std:
     result.clear();
     tg_kd_tree.search(std::back_inserter( result ), exact_bb);
     for ( it = result.begin(); it != result.end(); it++ ) {
-        north.push_back( SGGeod::fromDegM( boost::get<0>(*it).x(), boost::get<0>(*it).y(), boost::get<1>(*it) ) );
+        north.push_back(SGGeod::fromDegM(std::get<0>(*it).x(), std::get<0>(*it).y(), std::get<1>(*it)));
     }
 
     // find southern points
@@ -229,7 +222,7 @@ bool TGNodes::get_geod_edge( const SGBucket& b, std::vector<SGGeod>& north, std:
 
     tg_kd_tree.search(std::back_inserter( result ), exact_bb);
     for ( it = result.begin(); it != result.end(); it++ ) {
-        south.push_back( SGGeod::fromDegM( boost::get<0>(*it).x(), boost::get<0>(*it).y(), boost::get<1>(*it) ) );
+        south.push_back(SGGeod::fromDegM(std::get<0>(*it).x(), std::get<0>(*it).y(), std::get<1>(*it)));
     }
 
     // find eastern points
@@ -240,7 +233,7 @@ bool TGNodes::get_geod_edge( const SGBucket& b, std::vector<SGGeod>& north, std:
 
     tg_kd_tree.search(std::back_inserter( result ), exact_bb);
     for ( it = result.begin(); it != result.end(); it++ ) {
-        east.push_back( SGGeod::fromDegM( boost::get<0>(*it).x(), boost::get<0>(*it).y(), boost::get<1>(*it) ) );
+        east.push_back(SGGeod::fromDegM(std::get<0>(*it).x(), std::get<0>(*it).y(), std::get<1>(*it)));
     }
 
     // find western points
@@ -251,7 +244,7 @@ bool TGNodes::get_geod_edge( const SGBucket& b, std::vector<SGGeod>& north, std:
 
     tg_kd_tree.search(std::back_inserter( result ), exact_bb);
     for ( it = result.begin(); it != result.end(); it++ ) {
-        west.push_back( SGGeod::fromDegM( boost::get<0>(*it).x(), boost::get<0>(*it).y(), boost::get<1>(*it) ) );
+        west.push_back(SGGeod::fromDegM(std::get<0>(*it).x(), std::get<0>(*it).y(), std::get<1>(*it)));
     }
 
     return true;

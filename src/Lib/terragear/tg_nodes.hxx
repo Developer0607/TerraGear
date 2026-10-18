@@ -6,6 +6,7 @@
 #endif
 
 #include <cstdlib>
+#include <tuple>
 
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/Kd_tree.h>
@@ -13,8 +14,6 @@
 #include <CGAL/Fuzzy_iso_box.h>
 #include <CGAL/Search_traits_2.h>
 #include <CGAL/Search_traits_adapter.h>     /* Just use two dimensional lookup - elevation is a trait */
-#include <boost/iterator/zip_iterator.hpp>
-
 #include <simgear/compiler.h>
 #include <simgear/bucket/newbucket.hxx>
 #include <simgear/io/lowlevel.hxx>
@@ -27,26 +26,14 @@
 
 typedef CGAL::Simple_cartesian<double> Kernel;
 typedef Kernel::Point_2 Point;
-typedef boost::tuple<Point, double, TGNode*> Point_and_Elevation;
-
-//definition of the property map
-#ifdef CGAL_OLD
-struct My_point_property_map{
-    typedef Point value_type;
-    typedef const value_type& reference;
-    typedef const Point_and_Elevation& key_type;
-    typedef boost::readable_property_map_tag category;
-};
-#endif
+typedef std::tuple<Point, double, TGNode*> Point_and_Elevation;
 
 //typedef CGAL::Search_traits_2<Kernel> Traits;
 typedef CGAL::Search_traits_2<Kernel> Traits_base;
 
-#ifdef CGAL_OLD
-typedef CGAL::Search_traits_adapter<Point_and_Elevation, My_point_property_map, Traits_base> Traits;
-#else
-typedef CGAL::Search_traits_adapter<Point_and_Elevation,CGAL::Nth_of_tuple_property_map<0, Point_and_Elevation>,Traits_base>    Traits;
-#endif
+typedef CGAL::Search_traits_adapter<Point_and_Elevation,
+                                    CGAL::Nth_of_tuple_property_map<0, Point_and_Elevation>,
+                                    Traits_base> Traits;
 
 typedef CGAL::Fuzzy_iso_box<Traits> Fuzzy_bb;
 typedef CGAL::Kd_tree<Traits> Tree;

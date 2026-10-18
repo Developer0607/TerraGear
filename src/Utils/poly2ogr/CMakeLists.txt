@@ -9,8 +9,7 @@ target_link_libraries(poly2ogr
     ${GDAL_LIBRARY}
     terragear
     ${GETOPT_LIB}
-    ${SIMGEAR_CORE_LIBRARIES}
-    ${SIMGEAR_CORE_LIBRARY_DEPENDENCIES}
+    SimGearCore
 )
 
 install(TARGETS poly2ogr RUNTIME DESTINATION bin)

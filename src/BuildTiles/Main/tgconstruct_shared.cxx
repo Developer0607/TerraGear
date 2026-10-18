@@ -77,8 +77,6 @@ void TGConstruct::CreateMatchedEdgeFiles( std::vector<SGBucket>& bucketList )
             return;
         }
 
-        sgClearWriteError();
-
         // north
         nCount = north.size();
         SG_LOG( SG_GENERAL, SG_DEBUG, "write " << north.size() << " northern nodes to file " << filepath.c_str()  );
@@ -200,8 +198,6 @@ void TGConstruct::SaveSharedEdgeData( int stage )
                 return;
             }
 
-            sgClearWriteError();
-
             // north
             nCount = north.size();
             sgWriteInt( fp, nCount );
@@ -273,8 +269,6 @@ void TGConstruct::SaveSharedEdgeData( int stage )
                 SG_LOG( SG_GENERAL, SG_INFO,"ERROR: opening " << file_north.c_str() << " for writing!" );
                 return;
             }
-            sgClearWriteError();
-
             nCount = north.size();
             sgWriteInt( fp, nCount );
             for (int i=0; i<nCount; i++) {
@@ -289,8 +283,6 @@ void TGConstruct::SaveSharedEdgeData( int stage )
                 SG_LOG( SG_GENERAL, SG_INFO,"ERROR: opening " << file_south.c_str() << " for writing!" );
                 return;
             }
-            sgClearWriteError();
-
             nCount = south.size();
             sgWriteInt( fp, nCount );
             for (int i=0; i<nCount; i++) {
@@ -304,8 +296,6 @@ void TGConstruct::SaveSharedEdgeData( int stage )
                 SG_LOG( SG_GENERAL, SG_INFO,"ERROR: opening " << file_east.c_str() << " for writing!" );
                 return;
             }
-            sgClearWriteError();
-
             nCount = east.size();
             sgWriteInt( fp, nCount );
             for (int i=0; i<nCount; i++) {
@@ -319,8 +309,6 @@ void TGConstruct::SaveSharedEdgeData( int stage )
                 SG_LOG( SG_GENERAL, SG_INFO,"ERROR: opening " << file_west.c_str() << " for writing!" );
                 return;
             }
-            sgClearWriteError();
-
             nCount = west.size();
             sgWriteInt( fp, nCount );
             for (int i=0; i<nCount; i++) {
@@ -388,7 +376,6 @@ void TGConstruct::LoadSharedEdgeData( int stage )
             file = dir + "/" + b.gen_index_str() + "_south_edge";
             fp = gzopen( file.c_str(), "rb" );
             if (fp) {
-                sgClearReadError();
                 ReadNeighborFaces( fp );
                 gzclose( fp );
             }
@@ -399,7 +386,6 @@ void TGConstruct::LoadSharedEdgeData( int stage )
             file = dir + "/" + b.gen_index_str() + "_north_edge";
             fp = gzopen( file.c_str(), "rb" );
             if (fp) {
-                sgClearReadError();
                 ReadNeighborFaces( fp );
                 gzclose( fp );
             }
@@ -410,7 +396,6 @@ void TGConstruct::LoadSharedEdgeData( int stage )
             file = dir + "/" + b.gen_index_str() + "_west_edge";
             fp = gzopen( file.c_str(), "rb" );
             if (fp) {
-                sgClearReadError();
                 ReadNeighborFaces( fp );
                 gzclose( fp );
             }
@@ -421,7 +406,6 @@ void TGConstruct::LoadSharedEdgeData( int stage )
             file = dir + "/" + b.gen_index_str() + "_east_edge";
             fp = gzopen( file.c_str(), "rb" );
             if (fp) {
-                sgClearReadError();
                 ReadNeighborFaces( fp );
                 gzclose( fp );
             }
@@ -561,7 +545,6 @@ void TGConstruct::SaveToIntermediateFiles( int stage )
                     SG_LOG( SG_GENERAL, SG_INFO,"ERROR: opening " << file_clipped.c_str() << " for writing!" );
                     return;
                 }
-                sgClearWriteError();
                 polys_clipped.SaveToGzFile( fp );
                 gzclose( fp );
 
@@ -569,7 +552,6 @@ void TGConstruct::SaveToIntermediateFiles( int stage )
                     SG_LOG( SG_GENERAL, SG_INFO,"ERROR: opening " << file_nodes.c_str() << " for writing!" );
                     return;
                 }
-                sgClearWriteError();
                 nodes.SaveToGzFile( fp );
                 gzclose( fp );
                 
@@ -596,7 +578,6 @@ void TGConstruct::SaveToIntermediateFiles( int stage )
                     SG_LOG( SG_GENERAL, SG_INFO,"ERROR: opening " << file_clipped.c_str() << " for writing!" );
                     return;
                 }
-                sgClearWriteError();
                 polys_clipped.SaveToGzFile( fp );
                 gzclose( fp );
 
@@ -604,7 +585,6 @@ void TGConstruct::SaveToIntermediateFiles( int stage )
                     SG_LOG( SG_GENERAL, SG_INFO,"ERROR: opening " << file_nodes.c_str() << " for writing!" );
                     return;
                 }
-                sgClearWriteError();
                 nodes.SaveToGzFile( fp );
                 gzclose( fp );
                 
