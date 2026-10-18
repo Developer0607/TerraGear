@@ -1,0 +1,45 @@
+#!/bin/sh
+
+if [ "x${2}" == "x" ]; then 
+    echo "cd one level above the source directory and specify it's short name"
+    echo "as arg $1"
+    echo
+    echo "usage: $0 <source_dir> <dest_dir>"
+    exit
+fi
+
+VERSION=1.0.0
+SOURCE=$1
+DEST=$2
+VOLUME_ID=FG_Scenery_${SOURCE}_v${VERSION}
+PUBLISHER=http://www.flightgear.org/~curt
+PREPAIRER=http://www.flightgear.org/~curt
+# COPYRIGHT="Copyright (C) 2002  Curtis L. Olson"
+OUTPUT_IMG=${2}/${SOURCE}-${VERSION}.img
+
+# -f = follow symbolic links (the image directories are link trees)
+# -r = Rock Ridge protocol
+# -J -jcharset default = Joliet extensions
+# -l = allow full 31 character filenames
+# -D = do not use deep directory relocation
+# -L = allow IOS9660 filenames to begin with a period
+# -apple = Add Apple extensions.
+# -probe = Test each file for it's Mac creator/type
+
+OPTIONS="-f -r -J -jcharset default -l -D -L"
+
+# COMMAND="mkisofs $OPTIONS -V $VOLUME_ID -P $PUBLISHER -p $PREPAIRER \
+#         -apple -probe -split-output \
+#         -o $OUTPUT_IMG $SOURCE"
+COMMAND="mkisofs $OPTIONS -V $VOLUME_ID -P $PUBLISHER -p $PREPAIRER \
+	-apple -probe \
+        -o $OUTPUT_IMG $SOURCE"
+
+echo running:
+echo $COMMAND
+$COMMAND
+
+echo 
+echo "To examine the image before burning a cd:"
+echo
+echo "mount $OUTPUT_IMG /mnt -t iso9660 -o loop=/dev/loop3,blocksize=1024"

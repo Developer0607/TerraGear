@@ -1,0 +1,5 @@
+add_subdirectory(Prep)
+add_subdirectory(Lib)
+add_subdirectory(Airports)
+add_subdirectory(BuildTiles)
+add_subdirectory(Utils)
